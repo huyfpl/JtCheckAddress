@@ -9,34 +9,8 @@
   <script src="js/signature-algorithm.js"></script>
   <script src="js/banner.js" defer></script>
   <style>
-    @font-face {
-      font-family: "SignatureNiceMemory";
-      src:
-        url("fonts/14TH Nice Memory.otf") format("opentype"),
-        url("fonts/14TH Nice Memory.ttf") format("truetype"),
-        url("font/14TH Nice Memory.otf") format("opentype"),
-        url("font/14TH Nice Memory.ttf") format("truetype");
-      font-display: swap;
-    }
-
-    @font-face {
-      font-family: "SignatureHarbour";
-      src:
-        url("fonts/Fz-Harbour-Light.ttf") format("truetype"),
-        url("font/Fz-Harbour-Light.ttf") format("truetype");
-      font-display: swap;
-    }
-
-    @font-face {
-      font-family: "SignatureMotherland";
-      src:
-        url("fonts/NVN-Motherland-Signature.ttf") format("truetype"),
-        url("font/NVN-Motherland-Signature.ttf") format("truetype");
-      font-display: swap;
-    }
-
     :root {
-      --paper: #fffdf8;
+      --paper: #f7f2e8;
       --ink: #111;
       --muted: #64717d;
       --line: #d7e0e7;
@@ -46,6 +20,7 @@
       --brand-dark: #9f1116;
       --teal: #0f5967;
       --soft: #eef4f6;
+      --hand-cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cpath fill='%23fffefa' stroke='%230d47a1' stroke-width='1.8' stroke-linejoin='round' d='M12.3 3.4c1.3 0 2.3 1 2.3 2.3v8.2l.9-.9c.9-.9 2.4-.9 3.2.1.3.3.5.7.6 1.1l.8-.7c.9-.8 2.3-.7 3.1.2.3.4.5.8.5 1.2l.4-.3c.9-.7 2.2-.6 3 .3.5.6.6 1.3.4 2l-1.7 7.1c-.7 3-3.4 5.1-6.5 5.1h-5.9c-2.4 0-4.6-1.2-5.9-3.2L3.7 20c-.6-.9-.3-2.1.6-2.7.8-.5 1.8-.4 2.5.2l3.1 2.9V5.7c0-1.3 1.1-2.3 2.4-2.3z'/%3E%3Cpath fill='none' stroke='%23ff9d2e' stroke-width='1.4' stroke-linecap='round' d='M14.6 13.9v5.5m4.7-5.2v5.5m4.3-4.3v4.4'/%3E%3C/svg%3E") 11 3, auto;
     }
 
     * { box-sizing: border-box; }
@@ -56,6 +31,10 @@
       margin: 0;
       padding: 12px;
       color: var(--ink);
+    }
+
+    body.fancy-cursor-ready {
+      cursor: var(--hand-cursor);
     }
 
     .container {
@@ -415,6 +394,117 @@
       background: #0b4752;
     }
 
+    body.fancy-cursor-ready button,
+    body.fancy-cursor-ready select,
+    body.fancy-cursor-ready label,
+    body.fancy-cursor-ready input[type="file"],
+    body.fancy-cursor-ready input[type="checkbox"],
+    body.fancy-cursor-ready .employee-picker-option,
+    body.fancy-cursor-ready .png-preview-modal {
+      cursor: var(--hand-cursor);
+    }
+
+    body.fancy-cursor-ready textarea,
+    body.fancy-cursor-ready input[type="number"] {
+      cursor: text;
+    }
+
+    .cursor-sparkle {
+      position: fixed;
+      left: var(--spark-left, 0px);
+      top: var(--spark-top, 0px);
+      z-index: 80;
+      width: var(--spark-size, 9px);
+      height: var(--spark-size, 9px);
+      pointer-events: none;
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.4) rotate(0deg);
+      animation: cursor-sparkle-pop 620ms ease-out forwards;
+      will-change: transform, opacity;
+    }
+
+    .cursor-sparkle::before,
+    .cursor-sparkle::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle, #fff 0 20%, #ffe17d 22% 40%, transparent 42%);
+      clip-path: polygon(50% 0, 61% 38%, 100% 50%, 61% 62%, 50% 100%, 39% 62%, 0 50%, 39% 38%);
+      filter: drop-shadow(0 0 5px rgba(255, 198, 51, 0.72));
+    }
+
+    .cursor-sparkle::after {
+      opacity: 0.56;
+      transform: rotate(45deg) scale(0.64);
+      background: radial-gradient(circle, #fff 0 18%, #7bdcff 20% 38%, transparent 40%);
+      filter: drop-shadow(0 0 5px rgba(79, 188, 255, 0.55));
+    }
+
+    @keyframes cursor-sparkle-pop {
+      0% {
+        opacity: 0.95;
+        transform: translate(-50%, -50%) scale(0.35) rotate(0deg);
+      }
+      70% {
+        opacity: 0.72;
+      }
+      100% {
+        opacity: 0;
+        transform: translate(calc(-50% + var(--spark-dx, 10px)), calc(-50% + var(--spark-dy, -16px))) scale(1.28) rotate(150deg);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce), (pointer: coarse) {
+      .cursor-sparkle {
+        display: none;
+      }
+    }
+
+    .export-progress {
+      display: grid;
+      gap: 6px;
+      margin-top: 10px;
+      padding: 9px 10px;
+      border: 1px solid #d8e1e8;
+      border-radius: 6px;
+      background: #f8fbfc;
+      color: #26333d;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .export-progress[hidden] {
+      display: none;
+    }
+
+    .export-progress-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .export-progress-count {
+      color: var(--muted);
+      flex: 0 0 auto;
+      font-weight: 700;
+    }
+
+    .export-progress-track {
+      height: 6px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #e2ebf1;
+    }
+
+    .export-progress-bar {
+      width: 0%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--teal), var(--brand));
+      transition: width 0.16s ease;
+    }
+
     .receiver-panel {
       display: none;
       margin-top: 12px;
@@ -500,17 +590,14 @@
       margin: 0 auto;
       background-color: var(--paper);
       background-image:
-        linear-gradient(104deg, transparent 0 18%, rgba(118, 99, 67, 0.032) 18.35%, rgba(255, 255, 255, 0.16) 19.05%, transparent 20.2%),
-        linear-gradient(78deg, transparent 0 48%, rgba(78, 64, 43, 0.036) 48.25%, rgba(255, 255, 255, 0.2) 49.1%, transparent 50.2%),
-        linear-gradient(164deg, transparent 0 70%, rgba(95, 78, 54, 0.026) 70.2%, rgba(255, 255, 255, 0.18) 71.05%, transparent 72%),
-        repeating-linear-gradient(92deg, rgba(92, 76, 52, 0.012) 0 1px, transparent 1px 11px),
-        repeating-linear-gradient(2deg, rgba(255, 255, 255, 0.16) 0 1px, transparent 1px 15px),
-        radial-gradient(ellipse at 18% 12%, rgba(116, 96, 58, 0.035) 0, transparent 32%),
-        radial-gradient(ellipse at 78% 66%, rgba(88, 74, 48, 0.026) 0, transparent 34%),
-        radial-gradient(ellipse at 48% 42%, rgba(255, 255, 255, 0.45) 0, transparent 54%),
-        linear-gradient(93deg, rgba(110, 96, 72, 0.018), transparent 24%, rgba(255, 255, 255, 0.22) 48%, transparent 76%),
-        linear-gradient(180deg, rgba(255, 255, 255, 0.7), rgba(253, 249, 238, 0.34));
-      background-size: 100% 100%;
+        repeating-linear-gradient(94deg, rgba(93, 78, 51, 0.026) 0 1px, transparent 1px 9px),
+        repeating-linear-gradient(3deg, rgba(255, 255, 255, 0.22) 0 1px, transparent 1px 12px),
+        repeating-linear-gradient(137deg, transparent 0 14px, rgba(120, 104, 72, 0.018) 14px 15px, transparent 15px 30px),
+        radial-gradient(ellipse at 20% 14%, rgba(118, 96, 60, 0.055) 0, transparent 35%),
+        radial-gradient(ellipse at 72% 76%, rgba(92, 74, 45, 0.046) 0, transparent 42%),
+        radial-gradient(ellipse at 42% 42%, rgba(255, 255, 255, 0.32) 0, transparent 48%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.42), rgba(226, 216, 193, 0.12));
+      background-size: 100% 100%, 100% 100%, 120px 120px, 100% 100%, 100% 100%, 100% 100%, 100% 100%;
       padding: 12mm;
       box-shadow:
         inset 0 0 0 1px rgba(150, 135, 100, 0.16),
@@ -520,6 +607,14 @@
       font-family: "Times New Roman", Times, serif;
       overflow: hidden;
       contain: layout paint;
+    }
+
+    .pages-wrapper.is-exporting-png .page,
+    .pages-wrapper.is-exporting-png .page-continuation {
+      background: transparent !important;
+      background-image: none !important;
+      color: #17130f;
+      box-shadow: none;
     }
 
     .pages-wrapper.is-paginating .page-frame,
@@ -701,7 +796,7 @@
     .signature-list.receiver-cloud {
       display: flex;
       width: 100%;
-      max-width: 330px;
+      max-width: 264px;
       min-height: 0;
       margin: 0 auto;
       flex-direction: row;
@@ -729,7 +824,7 @@
       min-height: 46px;
       align-items: center;
       flex: 0 0 auto;
-      margin: -3px -4px;
+      margin: -4px -10px;
     }
 
     .receiver-cloud .signature-item + .signature-item {
@@ -984,13 +1079,18 @@
         </label>
 
         <label class="field">
-          <span>Nền ảnh tải lên</span>
-          <input type="file" id="pngBackgroundFile" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" title="Tải ảnh nền khi xuất ảnh"/>
+          <span>Nền giấy tải lên</span>
+          <input type="file" id="pngBackgroundFile" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" title="Tải ảnh làm nền của tờ giấy khi xuất ảnh"/>
         </label>
 
-        <label class="checkbox-field" title="Dùng ảnh nền đã tải khi xuất ảnh">
+        <label class="checkbox-field" title="Dùng ảnh tải lên làm nền của tờ giấy khi xuất ảnh">
           <input type="checkbox" id="pngUseUploadedBackgroundToggle" checked>
-          <span>Bật nền tải lên</span>
+          <span>Dùng nền giấy tải lên</span>
+        </label>
+
+        <label class="checkbox-field" title="Lọc bỏ mã vận đơn trùng khi nạp Excel và khi xuất ảnh">
+          <input type="checkbox" id="dedupeToggle" checked>
+          <span>Lọc trùng mã</span>
         </label>
 
       </div>
@@ -1003,6 +1103,16 @@
         <button type="button" id="btnToggleReceiver" class="secondary">Nhập người nhận</button>
         <button type="button" id="btnExportPng" class="ghost">Xuất ảnh</button>
         <button type="button" id="btnPrint">In A4</button>
+      </div>
+
+      <div class="export-progress" id="exportProgress" hidden aria-live="polite">
+        <div class="export-progress-row">
+          <span id="exportProgressText">Đang chuẩn bị xuất ảnh...</span>
+          <span class="export-progress-count" id="exportProgressCount"></span>
+        </div>
+        <div class="export-progress-track">
+          <div class="export-progress-bar" id="exportProgressBar"></div>
+        </div>
       </div>
 
       <div class="receiver-panel" id="receiverPanel">
@@ -1083,6 +1193,7 @@
   const signatureSizeInput = document.getElementById("signatureSizeInput");
   const pngBackgroundFile = document.getElementById("pngBackgroundFile");
   const pngUseUploadedBackgroundToggle = document.getElementById("pngUseUploadedBackgroundToggle");
+  const dedupeToggle = document.getElementById("dedupeToggle");
   const btnGenerate = document.getElementById("btnGenerate");
   const btnToggleReceiver = document.getElementById("btnToggleReceiver");
   const btnExportPng = document.getElementById("btnExportPng");
@@ -1104,8 +1215,14 @@
   const btnCopyPreviewPng = document.getElementById("btnCopyPreviewPng");
   const btnDownloadPreviewPng = document.getElementById("btnDownloadPreviewPng");
   const btnClosePngPreview = document.getElementById("btnClosePngPreview");
+  const exportProgress = document.getElementById("exportProgress");
+  const exportProgressText = document.getElementById("exportProgressText");
+  const exportProgressCount = document.getElementById("exportProgressCount");
+  const exportProgressBar = document.getElementById("exportProgressBar");
 
+  let rawEmpMap = {};
   let empMap = {};
+  let duplicateCodesRemoved = 0;
   let receiverNames = [];
   let receiverSignatureStates = [];
   let receiverSignaturesReady = false;
@@ -1120,12 +1237,19 @@
   let uploadedBackgroundDataUrl = "";
   let pageMetrics = [];
   let previewScrollRaf = 0;
+  let signatureResizeRaf = 0;
+  let signatureResizeTimer = 0;
+  let receiverInputRaf = 0;
+  let windowResizeRaf = 0;
+  let uploadedBackgroundImage = null;
+  let activeCursorSparkles = 0;
+  let lastCursorSparkleAt = 0;
   const singleReceiverPlaceholder = "Ví dụ: Nguyễn Văn A, Trần Thị B";
   const batchReceiverPlaceholder = "Cao hồng hà: Hương, Cảnh, Nam, Phong, Hậu\nNguyễn Duy Hưu: Jbagy, Hợp";
   const singleReceiverNote = "Có thể nhập một hoặc nhiều tên, mỗi tên cách nhau bằng dấu phẩy (,).";
   const batchReceiverNote = "Mỗi dòng theo mẫu Người bàn giao: Người nhận 1, Người nhận 2. Khi xuất ảnh hoặc in sẽ tự chạy tất cả các dòng.";
   const multiEmployeeReceiverNote = "Đang chọn nhiều nhân viên: có thể nhập tên người nhận dùng chung, hoặc dán nhiều dòng dạng Người bàn giao: Người nhận 1, Người nhận 2.";
-  const signatureFontsReady = SignatureAlgorithm.loadFontsFromFolder("fonts", "font");
+  const signatureFontsReady = SignatureAlgorithm.loadFontsFromFolder("fonts", "");
 
   function escapeHtml(s) {
     return String(s || "")
@@ -1136,11 +1260,110 @@
       .replaceAll("'", "&#039;");
   }
 
+  function canUseFancyCursor() {
+    return window.matchMedia && window.matchMedia("(pointer: fine)").matches;
+  }
+
+  function canUseCursorSparkles() {
+    return canUseFancyCursor()
+      && (!window.matchMedia || !window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+  }
+
+  function spawnCursorSparkle(x, y) {
+    if (activeCursorSparkles >= 18) return;
+
+    const sparkle = document.createElement("span");
+    const size = 6 + Math.random() * 8;
+    const dx = (Math.random() - 0.5) * 34;
+    const dy = -10 - Math.random() * 24;
+
+    sparkle.className = "cursor-sparkle";
+    sparkle.style.setProperty("--spark-left", `${x}px`);
+    sparkle.style.setProperty("--spark-top", `${y}px`);
+    sparkle.style.setProperty("--spark-size", `${size.toFixed(1)}px`);
+    sparkle.style.setProperty("--spark-dx", `${dx.toFixed(1)}px`);
+    sparkle.style.setProperty("--spark-dy", `${dy.toFixed(1)}px`);
+
+    activeCursorSparkles++;
+    sparkle.addEventListener("animationend", () => {
+      sparkle.remove();
+      activeCursorSparkles = Math.max(0, activeCursorSparkles - 1);
+    }, { once: true });
+    document.body.appendChild(sparkle);
+  }
+
+  function initFancyCursor() {
+    if (!canUseFancyCursor()) return;
+
+    document.body.classList.add("fancy-cursor-ready");
+    if (!canUseCursorSparkles()) return;
+
+    document.addEventListener("pointermove", (event) => {
+      if (event.pointerType && event.pointerType !== "mouse") return;
+      const now = performance.now();
+      if (now - lastCursorSparkleAt < 42) return;
+      lastCursorSparkleAt = now;
+      spawnCursorSparkle(event.clientX, event.clientY);
+    }, { passive: true });
+  }
+
   function parseReceiverNames(value) {
+    const seen = new Set();
     return String(value || "")
       .split(",")
       .map((name) => name.trim())
-      .filter(Boolean);
+      .filter((name) => {
+        if (!name) return false;
+        const key = normalizeLookupText(name);
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+  }
+
+  function normalizeCodeKey(value) {
+    return String(value || "").trim().replace(/\s+/g, "").toLocaleUpperCase("vi");
+  }
+
+  function renderEmployeeOptions() {
+    const selected = new Set(isMultiEmployeeMode()
+      ? Array.from(employeeMultiList.querySelectorAll('input[type="checkbox"]:checked')).map((input) => input.value).filter(Boolean)
+      : Array.from(employeeSelect.selectedOptions).map((option) => option.value).filter(Boolean));
+    employeeSelect.innerHTML = '<option value="">-- Chọn nhân viên --</option>';
+    Object.keys(empMap).sort((a, b) => a.localeCompare(b, "vi")).forEach((empName) => {
+      const option = document.createElement("option");
+      option.value = empName;
+      option.textContent = empName;
+      option.selected = selected.has(empName);
+      employeeSelect.appendChild(option);
+    });
+    updateEmployeeSelectMode(selected);
+  }
+
+  function rebuildEmployeeData() {
+    const shouldDedupe = !!dedupeToggle.checked;
+    const nextMap = {};
+    const seenCodes = new Set();
+    let removed = 0;
+
+    Object.entries(rawEmpMap).forEach(([empName, codes]) => {
+      nextMap[empName] = [];
+      codes.forEach((code) => {
+        const key = normalizeCodeKey(code);
+        if (!key) return;
+        if (shouldDedupe && seenCodes.has(key)) {
+          removed++;
+          return;
+        }
+        seenCodes.add(key);
+        nextMap[empName].push(code);
+      });
+    });
+
+    empMap = nextMap;
+    duplicateCodesRemoved = removed;
+    if (activeEmpName && empMap[activeEmpName]) activeCodes = empMap[activeEmpName];
+    renderEmployeeOptions();
   }
 
   function isMultiEmployeeMode() {
@@ -1175,8 +1398,8 @@
       : `${selected.length} nhân viên đã chọn`;
   }
 
-  function renderEmployeeMultiPicker() {
-    const selected = new Set(Array.from(employeeSelect.selectedOptions).map((option) => option.value).filter(Boolean));
+  function renderEmployeeMultiPicker(preservedSelected = null) {
+    const selected = preservedSelected || new Set(Array.from(employeeSelect.selectedOptions).map((option) => option.value).filter(Boolean));
     const employees = Object.keys(empMap).sort((a, b) => a.localeCompare(b, "vi"));
 
     employeeMultiList.innerHTML = employees.length
@@ -1205,7 +1428,7 @@
     employeeMultiToggleButton.setAttribute("aria-expanded", String(isOpen));
   }
 
-  function updateEmployeeSelectMode() {
+  function updateEmployeeSelectMode(preservedSelected = null) {
     const multiMode = isMultiEmployeeMode();
     employeeSelect.multiple = false;
     employeeSelect.size = 1;
@@ -1215,7 +1438,7 @@
       ? "Chọn nhiều nhân viên bàn giao"
       : "Chọn nhân viên";
     if (multiMode) {
-      renderEmployeeMultiPicker();
+      renderEmployeeMultiPicker(preservedSelected);
     } else {
       setEmployeeMultiMenuOpen(false);
     }
@@ -1370,7 +1593,14 @@
   }
 
   function syncSignatureFontSize() {
-    SignatureAlgorithm.setBaseFontSize(selectedSignatureFontSize());
+    return SignatureAlgorithm.setBaseFontSize(selectedSignatureFontSize());
+  }
+
+  function resizeSignatureStates(size) {
+    if (handoverSignatureState) handoverSignatureState.fontSize = size;
+    receiverSignatureStates.forEach((state) => {
+      if (state) state.fontSize = size;
+    });
   }
 
   function fileDateString(date = new Date()) {
@@ -1420,14 +1650,33 @@
   }
 
   function refreshSignatureSizing() {
-    syncSignatureFontSize();
-    if (handoverSignatureName) {
-      handoverSignatureState = SignatureAlgorithm.makeSignatureState("normal", "handover");
-    }
-    if (receiverSignaturesReady && receiverNames.length) {
-      randomizeReceiverSignatures();
+    const size = syncSignatureFontSize();
+    resizeSignatureStates(size);
+    if (signatureResizeTimer) {
+      clearTimeout(signatureResizeTimer);
+      signatureResizeTimer = 0;
     }
     rerenderCurrentDocument();
+  }
+
+  function scheduleSignatureSizingRefresh() {
+    const size = syncSignatureFontSize();
+    resizeSignatureStates(size);
+
+    if (!signatureResizeRaf) {
+      signatureResizeRaf = requestAnimationFrame(() => {
+        signatureResizeRaf = 0;
+        SignatureAlgorithm.paintSignatures(pagesWrapper).catch((err) => {
+          console.warn("Không vẽ được chữ ký khi đổi cỡ:", err);
+        });
+      });
+    }
+
+    if (signatureResizeTimer) clearTimeout(signatureResizeTimer);
+    signatureResizeTimer = window.setTimeout(() => {
+      signatureResizeTimer = 0;
+      rerenderCurrentDocument();
+    }, 130);
   }
 
   function saveReceiverNames(makeSignatures = false) {
@@ -1947,20 +2196,20 @@
     }
   }
 
-  function canvasToJpegBlob(canvas) {
+  function canvasToJpegBlob(canvas, quality = 0.9) {
     return new Promise((resolve, reject) => {
       const outputCanvas = document.createElement("canvas");
       outputCanvas.width = canvas.width;
       outputCanvas.height = canvas.height;
       const ctx = outputCanvas.getContext("2d");
-      ctx.fillStyle = "#fff";
+      ctx.fillStyle = "#f7f2e8";
       ctx.fillRect(0, 0, outputCanvas.width, outputCanvas.height);
       ctx.drawImage(canvas, 0, 0);
 
       outputCanvas.toBlob((blob) => {
         if (blob) resolve(blob);
         else reject(new Error("Không tạo được JPG blob."));
-      }, "image/jpeg", 0.86);
+      }, "image/jpeg", quality);
     });
   }
 
@@ -1977,57 +2226,98 @@
     });
   }
 
-  function drawPaperTexture(ctx, x, y, width, height) {
+  function drawDefaultPaperBase(ctx, x, y, width, height) {
+    ctx.fillStyle = "#f2ead9";
+    ctx.fillRect(x, y, width, height);
+
+    const centerWash = ctx.createRadialGradient(
+      x + width * 0.46,
+      y + height * 0.38,
+      width * 0.05,
+      x + width * 0.5,
+      y + height * 0.48,
+      width * 0.76
+    );
+    centerWash.addColorStop(0, "rgba(255, 255, 255, 0.34)");
+    centerWash.addColorStop(0.58, "rgba(246, 239, 221, 0.14)");
+    centerWash.addColorStop(1, "rgba(158, 130, 82, 0.16)");
+    ctx.fillStyle = centerWash;
+    ctx.fillRect(x, y, width, height);
+
+    const fiberWash = ctx.createLinearGradient(x, y, x + width, y + height);
+    fiberWash.addColorStop(0, "rgba(255, 255, 255, 0.18)");
+    fiberWash.addColorStop(0.36, "rgba(222, 209, 180, 0.12)");
+    fiberWash.addColorStop(0.68, "rgba(255, 255, 255, 0.16)");
+    fiberWash.addColorStop(1, "rgba(175, 146, 94, 0.12)");
+    ctx.fillStyle = fiberWash;
+    ctx.fillRect(x, y, width, height);
+  }
+
+  function drawPaperTexture(ctx, x, y, width, height, intensity = 1) {
     ctx.save();
     ctx.beginPath();
     ctx.rect(x, y, width, height);
     ctx.clip();
 
-    const grainScale = 0.55;
+    const grainScale = 0.58;
     const grainWidth = Math.max(1, Math.round(width * grainScale));
     const grainHeight = Math.max(1, Math.round(height * grainScale));
     const grain = ctx.createImageData(grainWidth, grainHeight);
     for (let i = 0; i < grain.data.length; i += 4) {
-      const warm = 236 + Math.floor(Math.random() * 20);
-      const speck = Math.random() > 0.985 ? -18 : 0;
+      const warm = 226 + Math.floor(Math.random() * 22);
+      const speck = Math.random() > 0.976 ? -24 : (Math.random() > 0.962 ? 14 : 0);
       grain.data[i] = Math.max(0, warm + speck);
-      grain.data[i + 1] = Math.max(0, warm - 2 + speck);
-      grain.data[i + 2] = Math.max(0, warm - 8 + speck);
-      grain.data[i + 3] = 10 + Math.floor(Math.random() * 16);
+      grain.data[i + 1] = Math.max(0, warm - 3 + speck);
+      grain.data[i + 2] = Math.max(0, warm - 11 + speck);
+      grain.data[i + 3] = Math.round((15 + Math.random() * 22) * intensity);
     }
     const texture = document.createElement("canvas");
     texture.width = grainWidth;
     texture.height = grainHeight;
     texture.getContext("2d").putImageData(grain, 0, 0);
-    ctx.globalAlpha = 0.55;
+    ctx.globalAlpha = 0.72 * intensity;
     ctx.drawImage(texture, x, y, width, height);
 
-    ctx.globalAlpha = 0.075;
+    ctx.globalAlpha = 0.12 * intensity;
     ctx.lineCap = "round";
-    for (let i = 0; i < 180; i++) {
+    for (let i = 0; i < 170; i++) {
       const sx = x + Math.random() * width;
       const sy = y + Math.random() * height;
-      const len = width * (0.015 + Math.random() * 0.055);
-      ctx.strokeStyle = i % 3 === 0 ? "rgba(84, 72, 52, 0.34)" : "rgba(255, 255, 255, 0.55)";
-      ctx.lineWidth = 0.35 + Math.random() * 0.75;
+      const len = width * (0.012 + Math.random() * 0.072);
+      ctx.strokeStyle = i % 3 === 0 ? "rgba(82, 69, 45, 0.38)" : "rgba(255, 255, 255, 0.64)";
+      ctx.lineWidth = 0.35 + Math.random() * 0.95;
       ctx.beginPath();
       ctx.moveTo(sx, sy);
       ctx.quadraticCurveTo(
         sx + len * 0.45,
-        sy + (Math.random() - 0.5) * height * 0.008,
+        sy + (Math.random() - 0.5) * height * 0.012,
         sx + len,
-        sy + (Math.random() - 0.5) * height * 0.012
+        sy + (Math.random() - 0.5) * height * 0.018
       );
       ctx.stroke();
     }
 
-    ctx.globalAlpha = 0.05;
-    for (let i = 0; i < 8; i++) {
+    ctx.globalAlpha = 0.055 * intensity;
+    for (let i = 0; i < 42; i++) {
+      const sx = x + Math.random() * width;
+      const sy = y + Math.random() * height;
+      const len = width * (0.035 + Math.random() * 0.12);
+      const lift = height * (0.006 + Math.random() * 0.016);
+      ctx.strokeStyle = i % 2 ? "rgba(95, 81, 55, 0.42)" : "rgba(255, 255, 255, 0.72)";
+      ctx.lineWidth = 0.65 + Math.random() * 1.55;
+      ctx.beginPath();
+      ctx.moveTo(sx, sy);
+      ctx.bezierCurveTo(sx + len * 0.24, sy - lift, sx + len * 0.6, sy + lift, sx + len, sy + (Math.random() - 0.5) * lift * 2.6);
+      ctx.stroke();
+    }
+
+    ctx.globalAlpha = 0.068 * intensity;
+    for (let i = 0; i < 14; i++) {
       const sx = x + width * (0.08 + Math.random() * 0.84);
       const sy = y + height * (0.06 + Math.random() * 0.88);
       const len = width * (0.28 + Math.random() * 0.55);
-      ctx.strokeStyle = i % 2 ? "rgba(54, 48, 38, 0.32)" : "rgba(255, 255, 255, 0.55)";
-      ctx.lineWidth = 1.2 + Math.random() * 3.2;
+      ctx.strokeStyle = i % 2 ? "rgba(54, 48, 38, 0.36)" : "rgba(255, 255, 255, 0.68)";
+      ctx.lineWidth = 1.4 + Math.random() * 3.8;
       ctx.beginPath();
       ctx.moveTo(sx, sy);
       ctx.bezierCurveTo(
@@ -2042,11 +2332,13 @@
     }
 
     const wrinkleLines = [
-      [0.06, 0.19, 0.92, 0.12, -0.018, 1.9, 0.055],
-      [0.13, 0.38, 0.88, 0.45, 0.016, 1.35, 0.045],
-      [0.08, 0.73, 0.86, 0.68, -0.014, 1.5, 0.05],
-      [0.33, 0.05, 0.26, 0.94, 0.012, 1.15, 0.036],
-      [0.69, 0.08, 0.78, 0.9, -0.01, 1.05, 0.032]
+      [0.06, 0.19, 0.92, 0.12, -0.018, 2.2, 0.078],
+      [0.13, 0.38, 0.88, 0.45, 0.016, 1.65, 0.066],
+      [0.08, 0.73, 0.86, 0.68, -0.014, 1.8, 0.07],
+      [0.33, 0.05, 0.26, 0.94, 0.012, 1.42, 0.052],
+      [0.69, 0.08, 0.78, 0.9, -0.01, 1.35, 0.048],
+      [0.2, 0.58, 0.74, 0.54, -0.022, 1.2, 0.044],
+      [0.47, 0.16, 0.56, 0.84, 0.017, 1.08, 0.042]
     ];
 
     wrinkleLines.forEach(([sx, sy, ex, ey, bend, lineWidth, alpha], index) => {
@@ -2065,7 +2357,7 @@
 
       ctx.globalCompositeOperation = "multiply";
       ctx.globalAlpha = 1;
-      ctx.strokeStyle = `rgba(62, 50, 32, ${alpha})`;
+      ctx.strokeStyle = `rgba(62, 50, 32, ${alpha * intensity})`;
       ctx.lineWidth = lineWidth + Math.random() * 0.65;
       ctx.lineCap = "round";
       ctx.beginPath();
@@ -2074,7 +2366,7 @@
       ctx.stroke();
 
       ctx.globalCompositeOperation = "screen";
-      ctx.strokeStyle = `rgba(255, 255, 255, ${alpha * 1.9})`;
+      ctx.strokeStyle = `rgba(255, 255, 255, ${alpha * 2.1 * intensity})`;
       ctx.lineWidth = Math.max(0.7, lineWidth * 0.6);
       ctx.beginPath();
       ctx.moveTo(x1 - nx * 1.6 * jitter, y1 - ny * 1.6 * jitter);
@@ -2092,9 +2384,9 @@
       y + height * 0.5,
       width * 0.7
     );
-    edge.addColorStop(0, "rgba(255, 255, 255, 0.16)");
+    edge.addColorStop(0, `rgba(255, 255, 255, ${0.18 * intensity})`);
     edge.addColorStop(0.72, "rgba(255, 255, 255, 0)");
-    edge.addColorStop(1, "rgba(68, 54, 35, 0.12)");
+    edge.addColorStop(1, `rgba(68, 54, 35, ${0.15 * intensity})`);
     ctx.globalAlpha = 1;
     ctx.fillStyle = edge;
     ctx.fillRect(x, y, width, height);
@@ -2102,10 +2394,61 @@
     ctx.restore();
   }
 
+  function drawPaperCurl(ctx, x, y, width, height, intensity = 1) {
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(x, y, width, height);
+    ctx.clip();
+
+    const topShadow = ctx.createLinearGradient(0, y, 0, y + height * 0.08);
+    topShadow.addColorStop(0, `rgba(92, 72, 42, ${0.1 * intensity})`);
+    topShadow.addColorStop(1, "rgba(92, 72, 42, 0)");
+    ctx.fillStyle = topShadow;
+    ctx.fillRect(x, y, width, height * 0.08);
+
+    const bottomLift = ctx.createLinearGradient(0, y + height * 0.88, 0, y + height);
+    bottomLift.addColorStop(0, "rgba(255, 255, 255, 0)");
+    bottomLift.addColorStop(0.72, `rgba(255, 255, 255, ${0.2 * intensity})`);
+    bottomLift.addColorStop(1, `rgba(72, 54, 32, ${0.14 * intensity})`);
+    ctx.fillStyle = bottomLift;
+    ctx.fillRect(x, y + height * 0.88, width, height * 0.12);
+
+    const cornerSize = Math.min(width, height) * 0.13;
+    const corner = ctx.createRadialGradient(
+      x + width - cornerSize * 0.2,
+      y + cornerSize * 0.2,
+      cornerSize * 0.05,
+      x + width - cornerSize * 0.2,
+      y + cornerSize * 0.2,
+      cornerSize
+    );
+    corner.addColorStop(0, `rgba(255, 255, 255, ${0.4 * intensity})`);
+    corner.addColorStop(0.55, `rgba(255, 255, 255, ${0.14 * intensity})`);
+    corner.addColorStop(1, "rgba(88, 66, 36, 0)");
+    ctx.fillStyle = corner;
+    ctx.beginPath();
+    ctx.moveTo(x + width, y);
+    ctx.quadraticCurveTo(x + width - cornerSize * 0.24, y + cornerSize * 0.54, x + width - cornerSize, y + cornerSize * 0.18);
+    ctx.lineTo(x + width, y + cornerSize);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.globalAlpha = 0.32 * intensity;
+    ctx.strokeStyle = "rgba(92, 72, 42, 0.24)";
+    ctx.lineWidth = Math.max(0.8, width * 0.0012);
+    ctx.beginPath();
+    ctx.moveTo(x + width - cornerSize * 0.96, y + cornerSize * 0.2);
+    ctx.quadraticCurveTo(x + width - cornerSize * 0.28, y + cornerSize * 0.46, x + width - 2, y + cornerSize * 0.95);
+    ctx.stroke();
+
+    ctx.restore();
+  }
+
   async function drawUploadedBackground(ctx, width, height) {
     if (!uploadedBackgroundDataUrl) return false;
     try {
-      const img = await loadImage(uploadedBackgroundDataUrl);
+      const img = uploadedBackgroundImage || await loadImage(uploadedBackgroundDataUrl);
+      uploadedBackgroundImage = img;
       const scale = Math.max(width / img.naturalWidth, height / img.naturalHeight);
       const drawWidth = img.naturalWidth * scale;
       const drawHeight = img.naturalHeight * scale;
@@ -2117,43 +2460,24 @@
     }
   }
 
-  async function composePageOnBackground(pageCanvas, pageIndex) {
-    const shouldUseUploadedBackground = pngUseUploadedBackgroundToggle.checked && !!uploadedBackgroundDataUrl;
-    const marginX = shouldUseUploadedBackground ? Math.round(pageCanvas.width * 0.16) : 0;
-    const marginY = shouldUseUploadedBackground ? Math.round(pageCanvas.height * 0.08) : 0;
+  async function composePageOnBackground(pageCanvas) {
+    const shouldUseUploadedPaper = pngUseUploadedBackgroundToggle.checked && !!uploadedBackgroundDataUrl;
     const canvas = document.createElement("canvas");
-    canvas.width = pageCanvas.width + marginX * 2;
-    canvas.height = pageCanvas.height + marginY * 2;
+    canvas.width = pageCanvas.width;
+    canvas.height = pageCanvas.height;
     const ctx = canvas.getContext("2d");
 
-    const usedUpload = shouldUseUploadedBackground && await drawUploadedBackground(ctx, canvas.width, canvas.height);
-    if (!usedUpload) {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(pageCanvas, 0, 0);
-      drawPaperTexture(ctx, 0, 0, pageCanvas.width, pageCanvas.height);
-      return canvas;
+    const usedUpload = shouldUseUploadedPaper && await drawUploadedBackground(ctx, canvas.width, canvas.height);
+    if (usedUpload) {
+      drawPaperTexture(ctx, 0, 0, canvas.width, canvas.height, 0.24);
+      drawPaperCurl(ctx, 0, 0, canvas.width, canvas.height, 0.62);
+    } else {
+      drawDefaultPaperBase(ctx, 0, 0, canvas.width, canvas.height);
+      drawPaperTexture(ctx, 0, 0, canvas.width, canvas.height, 1);
+      drawPaperCurl(ctx, 0, 0, canvas.width, canvas.height, 1);
     }
 
-    const angleDirection = pageIndex % 2 ? 1 : -1;
-    const angle = angleDirection * (0.7 + Math.random() * 1.1) * Math.PI / 180;
-    const offsetX = Math.round((Math.random() - 0.5) * marginX * 0.16);
-    const offsetY = Math.round((Math.random() - 0.5) * marginY * 0.16);
-    const centerX = canvas.width / 2 + offsetX;
-    const centerY = canvas.height / 2 + offsetY;
-
-    ctx.save();
-    ctx.translate(centerX, centerY);
-    ctx.rotate(angle);
-    ctx.shadowColor = "rgba(20, 24, 28, 0.28)";
-    ctx.shadowBlur = Math.round(pageCanvas.width * 0.028);
-    ctx.shadowOffsetX = Math.round(pageCanvas.width * 0.012);
-    ctx.shadowOffsetY = Math.round(pageCanvas.width * 0.02);
-    ctx.fillStyle = "#f7f4ea";
-    ctx.fillRect(-pageCanvas.width / 2, -pageCanvas.height / 2, pageCanvas.width, pageCanvas.height);
-    ctx.shadowColor = "transparent";
-    ctx.drawImage(pageCanvas, -pageCanvas.width / 2, -pageCanvas.height / 2);
-    drawPaperTexture(ctx, Math.round(-pageCanvas.width / 2), Math.round(-pageCanvas.height / 2), pageCanvas.width, pageCanvas.height);
-    ctx.restore();
+    ctx.drawImage(pageCanvas, 0, 0);
 
     return canvas;
   }
@@ -2202,6 +2526,22 @@
         img.onerror = resolve;
       });
     }));
+  }
+
+  function nextFrame() {
+    return new Promise((resolve) => requestAnimationFrame(resolve));
+  }
+
+  function setExportProgress(visible, message = "", current = 0, total = 0) {
+    exportProgress.hidden = !visible;
+    if (!visible) return;
+
+    const safeTotal = Math.max(0, total);
+    const safeCurrent = Math.max(0, Math.min(current, safeTotal || current));
+    const percent = safeTotal ? Math.round((safeCurrent / safeTotal) * 100) : 0;
+    exportProgressText.textContent = message || "Đang chuẩn bị xuất ảnh...";
+    exportProgressCount.textContent = safeTotal ? `${safeCurrent}/${safeTotal}` : "";
+    exportProgressBar.style.width = `${percent}%`;
   }
 
   function setExportBusy(isBusy) {
@@ -2315,8 +2655,11 @@
       setExportBusy(true);
       clearPngPreview();
       pagesWrapper.classList.add("is-exporting-png");
+      setExportProgress(true, "Đang chuẩn bị trang để xuất ảnh...", 0, pageEls.length);
+      await nextFrame();
 
       try {
+        setExportProgress(true, "Đang chuẩn bị logo và hình ảnh...", 0, pageEls.length);
         const blackLogo = await makeBlackLogoDataUrl();
         logoImgs.forEach((img) => {
           img.src = blackLogo;
@@ -2327,32 +2670,42 @@
 
       await waitForImages(pagesWrapper);
       if (document.fonts && document.fonts.ready) await document.fonts.ready.catch(() => {});
+      setExportProgress(true, "Đang vẽ lại chữ ký trước khi xuất...", 0, pageEls.length);
       await SignatureAlgorithm.paintSignatures(pagesWrapper);
-      await new Promise((resolve) => setTimeout(resolve, 80));
+      await nextFrame();
+      await nextFrame();
       pagesWrapper.style.transform = "";
       previewShell.style.height = "";
 
       const files = [];
+      const exportScale = Math.min(2.2, Math.max(1.65, window.devicePixelRatio || 2));
       for (let i = 0; i < pageEls.length; i++) {
         pagesWrapper.style.transform = "";
         previewShell.style.height = "";
+        setExportProgress(true, `Đang xuất trang ${i + 1} / ${pageEls.length}...`, i, pageEls.length);
+        await nextFrame();
         const canvas = await html2canvas(pageEls[i], {
-          backgroundColor: "#fff",
-          scale: 3,
+          backgroundColor: null,
+          scale: exportScale,
           useCORS: true,
+          imageTimeout: 6000,
           logging: false
         });
-        const composedCanvas = await composePageOnBackground(canvas, i);
-        const blob = await canvasToJpegBlob(composedCanvas);
+        const composedCanvas = await composePageOnBackground(canvas);
+        const blob = await canvasToJpegBlob(composedCanvas, 0.9);
         files.push({
           name: imageFileName(pageEls[i], i, pageEls.length),
           url: blobToObjectUrl(blob),
           blob
         });
+        setExportProgress(true, `Đã xuất trang ${i + 1} / ${pageEls.length}.`, i + 1, pageEls.length);
+        await nextFrame();
       }
       showPngPreview(files);
+      setExportProgress(true, `Xuất ảnh xong: ${files.length} file JPG.`, pageEls.length, pageEls.length);
     } catch (err) {
       console.error(err);
+      setExportProgress(true, "Xuất ảnh bị lỗi, hãy thử lại.", 0, pageEls.length);
       alert("Không xuất được ảnh. Nếu lỗi do logo online, hãy thử lại khi có mạng ổn định.");
     } finally {
       logoImgs.forEach((img, index) => {
@@ -2396,6 +2749,7 @@
   }
 
   syncSignatureFontSize();
+  initFancyCursor();
   showInitialTemplate();
   updateEmployeeSelectMode();
   updateReceiverInputMode();
@@ -2411,28 +2765,23 @@
         const wb = XLSX.read(data, { type: "array" });
         const sh = wb.Sheets[wb.SheetNames[0]];
         const aoa = XLSX.utils.sheet_to_json(sh, { header: 1, defval: "" });
-        empMap = {};
+        rawEmpMap = {};
 
         for (let i = 0; i < aoa.length; i++) {
           const row = aoa[i];
           const emp = String(row[12] || "").trim();
           const code = String(row[0] || "").trim();
           if (emp && code) {
-            if (!empMap[emp]) empMap[emp] = [];
-            empMap[emp].push(code);
+            if (!rawEmpMap[emp]) rawEmpMap[emp] = [];
+            rawEmpMap[emp].push(code);
           }
         }
 
-        employeeSelect.innerHTML = '<option value="">-- Chọn nhân viên --</option>';
-        Object.keys(empMap).sort((a, b) => a.localeCompare(b, "vi")).forEach((k) => {
-          const o = document.createElement("option");
-          o.value = k;
-          o.textContent = k;
-          employeeSelect.appendChild(o);
-        });
-        updateEmployeeSelectMode();
+        rebuildEmployeeData();
 
-        alert("Đã nạp dữ liệu nhân viên từ Excel.");
+        alert(duplicateCodesRemoved
+          ? `Đã nạp dữ liệu nhân viên từ Excel. Đã lọc ${duplicateCodesRemoved} mã trùng.`
+          : "Đã nạp dữ liệu nhân viên từ Excel.");
       } catch (err) {
         console.error(err);
         alert("Lỗi đọc file Excel.");
@@ -2504,7 +2853,11 @@
     setEmployeeMultiMenuOpen(false);
   });
   receiverNamesInput.addEventListener("input", () => {
-    updateReceiverInputMode();
+    if (receiverInputRaf) return;
+    receiverInputRaf = requestAnimationFrame(() => {
+      receiverInputRaf = 0;
+      updateReceiverInputMode();
+    });
   });
   btnExportPng.addEventListener("click", exportPagesAsPng);
   btnCopyPreviewPng.addEventListener("click", copyPreviewPngFiles);
@@ -2520,21 +2873,31 @@
     });
   }, { passive: true });
   pngUseUploadedBackgroundToggle.addEventListener("change", clearPngPreview);
+  dedupeToggle.addEventListener("change", () => {
+    if (!Object.keys(rawEmpMap).length) return;
+    rebuildEmployeeData();
+    updateReceiverStatus();
+    clearPngPreview();
+    if (hasGeneratedDocument) rerenderCurrentDocument();
+  });
   pngBackgroundFile.addEventListener("change", () => {
     const file = pngBackgroundFile.files && pngBackgroundFile.files[0];
     if (!file) {
       uploadedBackgroundDataUrl = "";
+      uploadedBackgroundImage = null;
       return;
     }
     if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
       pngBackgroundFile.value = "";
       uploadedBackgroundDataUrl = "";
+      uploadedBackgroundImage = null;
       alert("Chỉ hỗ trợ ảnh nền JPG, PNG hoặc WEBP.");
       return;
     }
     const reader = new FileReader();
     reader.onload = (event) => {
       uploadedBackgroundDataUrl = String(event.target.result || "");
+      uploadedBackgroundImage = null;
       clearPngPreview();
     };
     reader.readAsDataURL(file);
@@ -2549,8 +2912,14 @@
   });
   bcSelect.addEventListener("change", rerenderCurrentDocument);
   signatureSizeInput.addEventListener("change", refreshSignatureSizing);
-  signatureSizeInput.addEventListener("input", refreshSignatureSizing);
-  window.addEventListener("resize", fitPreviewToScreen);
+  signatureSizeInput.addEventListener("input", scheduleSignatureSizingRefresh);
+  window.addEventListener("resize", () => {
+    if (windowResizeRaf) return;
+    windowResizeRaf = requestAnimationFrame(() => {
+      windowResizeRaf = 0;
+      fitPreviewToScreen();
+    });
+  });
   btnPrint.addEventListener("click", printCurrentDocument);
 </script>
 </body>

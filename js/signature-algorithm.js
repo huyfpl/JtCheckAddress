@@ -2,10 +2,10 @@
   let signatureCounter = 0;
   const signatureStore = new Map();
   const DEFAULT_SIGNATURE_FONT_SIZE = 25;
-  const SIGNATURE_INK_COLORS = ["#34383d", "#3c444b", "#293a45", "#46494d", "#2f3940"];
-  const defaultFontFamilies = ["SignatureMotherland", "SignatureNiceMemory", "SignatureHarbour"];
-  let signatureFontFamilies = [...defaultFontFamilies];
-  const loadedFontKeys = new Set(defaultFontFamilies);
+  const SIGNATURE_INK_COLORS = ["#0d47a1", "#0a55b8", "#1559b0", "#064a9f", "#1b5da8"];
+  const DEFAULT_FONT_FAMILY = "Arial";
+  let signatureFontFamilies = [DEFAULT_FONT_FAMILY];
+  const loadedFontKeys = new Set();
   const loadedFontMeta = [];
   let baseFontSize = DEFAULT_SIGNATURE_FONT_SIZE;
   let fontBag = [];
@@ -13,6 +13,10 @@
     "14TH Nice Memory.otf",
     "14TH Nice Memory.ttf",
     "Fz-Harbour-Light.ttf",
+    "Fz-Jim-Sintergate.ttf",
+    "Fz-Mrattoos-Signature (1).ttf",
+    "Fz-MyEverything.ttf",
+    "FzSignRathi_Update.ttf",
     "NVN-Motherland-Signature.ttf"
   ];
 
@@ -42,11 +46,11 @@
   }
 
   function quoteFontFamily(family) {
-    return `"${String(family || "SignatureNiceMemory").replaceAll("\\", "\\\\").replaceAll('"', '\\"')}"`;
+    return `"${String(family || DEFAULT_FONT_FAMILY).replaceAll("\\", "\\\\").replaceAll('"', '\\"')}"`;
   }
 
   function fontStack(family) {
-    return `${quoteFontFamily(family)}, "SignatureMotherland", "SignatureNiceMemory", "SignatureHarbour", cursive`;
+    return `${quoteFontFamily(family)}, Arial, Helvetica, sans-serif`;
   }
 
   function shuffledFonts(fonts) {
@@ -67,7 +71,7 @@
     }
     const bagIndex = fontBag.findIndex((family) => candidates.includes(family));
     if (bagIndex >= 0) return fontBag.splice(bagIndex, 1)[0];
-    return candidates[Math.floor(Math.random() * candidates.length)] || "SignatureNiceMemory";
+    return candidates[Math.floor(Math.random() * candidates.length)] || DEFAULT_FONT_FAMILY;
   }
 
   function fontFamilyFromFile(fileName) {
@@ -138,8 +142,8 @@
       }
     }
 
-    const loadedAutoFamilies = Array.from(loadedFontKeys).filter((family) => !defaultFontFamilies.includes(family));
-    signatureFontFamilies = loadedAutoFamilies.length ? loadedAutoFamilies : [...defaultFontFamilies];
+    const loadedAutoFamilies = Array.from(loadedFontKeys);
+    signatureFontFamilies = loadedAutoFamilies.length ? loadedAutoFamilies : [DEFAULT_FONT_FAMILY];
     fontBag = shuffledFonts(signatureFontFamilies);
     console.info("Signature fonts loaded from fonts/:", loadedFontMeta.map((font) => font.fileName));
     return { loaded: loadedFamilies.length, total: fontFiles.length, files: loadedFontMeta.map((font) => font.fileName) };
@@ -170,7 +174,7 @@
       fontSize,
       rotate: randomBetween(-2.2, 2.4, 1),
       skew: randomBetween(-3.2, 3.2, 1),
-      scaleX: randomBetween(0.98, 1.08, 2),
+      scaleX: role === "receiver" ? randomBetween(0.94, 1.02, 2) : randomBetween(0.98, 1.08, 2),
       x: randomBetween(-8, 8, 1),
       y: randomBetween(-1.4, 1.6, 1),
       fullNameX: randomBetween(-2.2, 2.2, 1),
@@ -178,9 +182,9 @@
       nameGap: role === "receiver" ? randomBetween(7, 11, 1) : randomBetween(9, 14, 1),
       lineIndent: role === "receiver" ? randomBetween(-2.2, 2.8, 1) : randomBetween(-1.4, 1.4, 1),
       lineShift: role === "receiver" ? randomBetween(-0.6, 0.7, 1) : 0,
-      letterSpacing: 0.05,
+      letterSpacing: role === "receiver" ? -0.2 : 0.02,
       color: pickInkColor(),
-      opacity: randomBetween(0.78, 0.9, 2),
+      opacity: randomBetween(0.9, 0.97, 2),
       roughOffsetX: randomBetween(-0.35, 0.35, 2),
       roughOffsetY: randomBetween(-0.28, 0.28, 2),
       lightOffsetX: direction * randomBetween(0.18, 0.38, 2),
@@ -253,6 +257,13 @@
     });
   }
 
+  function visualFontScale(ctx, text, fontSize) {
+    const metrics = ctx.measureText(text || "M");
+    const measuredHeight = (metrics.actualBoundingBoxAscent || fontSize * 0.72) + (metrics.actualBoundingBoxDescent || fontSize * 0.18);
+    const targetHeight = fontSize * 0.86;
+    return Math.max(0.74, Math.min(1.16, targetHeight / Math.max(1, measuredHeight)));
+  }
+
   function drawLine(ctx, text, options) {
     const {
       x,
@@ -275,28 +286,30 @@
     } = options;
 
     ctx.font = `${fontSize}px ${fontStack(fontFamily)}`;
-    const width = textWidth(ctx, text, letterSpacing);
+    const visualScale = visualFontScale(ctx, text, fontSize);
+    const rawWidth = textWidth(ctx, text, letterSpacing);
+    const width = rawWidth * visualScale;
     const maxWidth = boxWidth - sidePadding * 2;
     const fitScaleX = Math.min(scaleX, maxWidth / Math.max(width, 1));
     const dark = color;
-    const mid = mixHexColor(color, "#6f7479", 0.34);
-    const pale = mixHexColor(color, "#f2f1ec", 0.58);
+    const mid = mixHexColor(color, "#3369a8", 0.2);
+    const pale = mixHexColor(color, "#eef5ff", 0.4);
 
     ctx.save();
     ctx.translate(boxWidth / 2 + x, y);
     ctx.rotate((rotate * Math.PI) / 180);
     ctx.transform(1, 0, Math.tan((skew * Math.PI) / 180), 1, 0, 0);
-    ctx.scale(fitScaleX, 1);
-    ctx.translate(-width / 2, 0);
+    ctx.scale(fitScaleX * visualScale, visualScale);
+    ctx.translate(-rawWidth / 2, 0);
 
     const gradient = ctx.createLinearGradient(0, -fontSize, width, 5);
-    gradient.addColorStop(0, rgba(dark, 0.86));
-    gradient.addColorStop(0.28, rgba(mid, 0.64));
-    gradient.addColorStop(0.54, rgba(pale, 0.22));
-    gradient.addColorStop(0.78, rgba(dark, 0.78));
-    gradient.addColorStop(1, rgba(mid, 0.58));
+    gradient.addColorStop(0, rgba(dark, 0.95));
+    gradient.addColorStop(0.28, rgba(mid, 0.82));
+    gradient.addColorStop(0.54, rgba(pale, 0.3));
+    gradient.addColorStop(0.78, rgba(dark, 0.92));
+    gradient.addColorStop(1, rgba(mid, 0.78));
 
-    ctx.globalAlpha = 0.07;
+    ctx.globalAlpha = 0.05;
     ctx.filter = "none";
     ctx.fillStyle = rgba(pale, 0.38);
     drawTextWithSpacing(ctx, text, lightOffsetX, -0.4, letterSpacing);
@@ -305,18 +318,18 @@
     ctx.fillStyle = gradient;
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
-    ctx.lineWidth = Math.max(0.3, fontSize / 68) * lineWidthBoost;
-    ctx.strokeStyle = rgba(dark, 0.24);
+    ctx.lineWidth = Math.max(0.34, fontSize / 58) * lineWidthBoost;
+    ctx.strokeStyle = rgba(dark, 0.34);
     strokeTextWithSpacing(ctx, text, 0, 0, letterSpacing);
     drawTextWithSpacing(ctx, text, 0, 0, letterSpacing);
 
-    ctx.globalAlpha = 0.08;
+    ctx.globalAlpha = 0.1;
     ctx.fillStyle = rgba(dark, 0.7);
     drawTextWithSpacing(ctx, text, roughOffsetX, roughOffsetY, letterSpacing);
 
     ctx.globalCompositeOperation = "destination-out";
-    noise.slice(0, Math.max(8, Math.round(noise.length * 0.55))).forEach((point) => {
-      ctx.globalAlpha = Math.min(0.11, point.a * 1.35);
+    noise.slice(0, Math.max(8, Math.round(noise.length * 0.42))).forEach((point) => {
+      ctx.globalAlpha = Math.min(0.075, point.a);
       ctx.beginPath();
       ctx.arc(point.x % Math.max(width, 1), point.y - 34, point.r, 0, Math.PI * 2);
       ctx.fill();
@@ -331,7 +344,7 @@
     const logicalWidth = boxWidth;
     const logicalHeight = boxHeight;
     const dpr = window.devicePixelRatio || 1;
-    const ratio = Math.max(4, Math.min(8, Math.ceil(dpr * 4)));
+    const ratio = Math.max(2, Math.min(4, Math.ceil(dpr * 2.25)));
 
     canvas.width = logicalWidth * ratio;
     canvas.height = logicalHeight * ratio;
@@ -370,7 +383,7 @@
       roughOffsetY: state.roughOffsetY,
       noise: state.noise,
       sidePadding: showFullName === false ? 7 : 12,
-      lineWidthBoost: showFullName === false ? 1.32 : 1
+      lineWidthBoost: showFullName === false ? 1.48 : 1.1
     });
 
     if (showFullName !== false) {
@@ -435,15 +448,15 @@
       ? `transform:translate(${stagger}px, ${state.lineShift || 0}px);z-index:${(index % 5) + 1};`
       : "";
     const receiverSingleLine = state.role === "receiver" && !showFullName;
-    const estimatedSignWidth = estimateTextWidth(normalized.signatureText, state.fontSize, receiverSingleLine ? 0.54 : 0.5) + (receiverSingleLine ? 34 : 42);
+    const estimatedSignWidth = estimateTextWidth(normalized.signatureText, state.fontSize, receiverSingleLine ? 0.43 : 0.5) + (receiverSingleLine ? 22 : 42);
     const estimatedNameWidth = showFullName ? estimateTextWidth(normalized.fullName, state.fontSize * 0.72, 0.5) + 42 : 0;
     const estimatedWidth = Math.max(estimatedSignWidth, estimatedNameWidth);
     const boxWidth = state.role === "receiver"
-      ? Math.max(96, Math.min(238, estimatedWidth))
+      ? Math.max(78, Math.min(205, estimatedWidth))
       : Math.max(170, Math.min(290, estimatedWidth));
     const boxHeight = showFullName
       ? Math.max(62, Math.round(state.fontSize * 2.45 + (state.nameGap || 9)))
-      : Math.max(50, Math.round(state.fontSize * 1.86));
+      : Math.max(44, Math.round(state.fontSize * 1.68));
 
     signatureStore.set(id, { ...normalized, showFullName, state, boxWidth, boxHeight });
 
